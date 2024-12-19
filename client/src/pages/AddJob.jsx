@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthContext } from "../providers/AuthProvider";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const AddJob = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -30,8 +32,21 @@ const AddJob = () => {
       min_price,
       max_price,
       description,
+      bid_count: 0,
     };
     // console.log(addJobData);
+
+    try {
+      axios
+        .post(`${import.meta.env.VITE_URL}/add-job`, addJobData)
+        .then((res) => {
+          if (res.data.insertedId) {
+            toast.success("job posted successfully");
+          }
+        });
+    } catch (err) {
+      toast.error(err);
+    }
   };
 
   return (

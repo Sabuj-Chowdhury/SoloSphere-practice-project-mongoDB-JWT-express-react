@@ -21,6 +21,22 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const db = client.db("solo-db"); // database
+    const jobsCollection = db.collection("jobs"); //jobs collection
+
+    // ************************POST***********************
+
+    // API for saving job post data in DB
+    app.post("/add-job", async (req, res) => {
+      const jobData = req.body;
+      // console.log(jobData);
+
+      const result = await jobsCollection.insertOne(jobData);
+      res.send(result);
+    });
+
+    // ************************GET***********************
+
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
