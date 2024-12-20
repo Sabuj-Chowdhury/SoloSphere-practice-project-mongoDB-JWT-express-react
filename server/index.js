@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 const port = process.env.PORT || 9000;
@@ -46,6 +46,16 @@ async function run() {
       const email = req.params.email;
       const query = { "buyer.email": email };
       const result = await jobsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // **********************DELETE************************
+
+    //delete a job from the DB
+    app.delete("/delete-job/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await jobsCollection.deleteOne(query);
       res.send(result);
     });
 
