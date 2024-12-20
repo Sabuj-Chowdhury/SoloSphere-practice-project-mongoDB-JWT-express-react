@@ -41,6 +41,14 @@ async function run() {
       res.send(result);
     });
 
+    // API to get all jobs post by logged in user
+    app.get("/all-jobs/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { "buyer.email": email };
+      const result = await jobsCollection.find(query).toArray();
+      res.send(result);
+    });
+
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
