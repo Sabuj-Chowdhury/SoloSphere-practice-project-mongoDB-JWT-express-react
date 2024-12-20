@@ -25,7 +25,6 @@ async function run() {
     const jobsCollection = db.collection("jobs"); //jobs collection
 
     // ************************POST***********************
-
     // API for saving job post data in DB
     app.post("/add-job", async (req, res) => {
       const jobData = req.body;
@@ -36,6 +35,11 @@ async function run() {
     });
 
     // ************************GET***********************
+    // API to get all the jobs
+    app.get("/all-jobs", async (req, res) => {
+      const result = await jobsCollection.find().toArray();
+      res.send(result);
+    });
 
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
