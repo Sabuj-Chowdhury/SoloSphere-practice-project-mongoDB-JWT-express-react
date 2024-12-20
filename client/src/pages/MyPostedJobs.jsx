@@ -43,6 +43,37 @@ const MyPostedJobs = () => {
       });
   };
 
+  // delete with custom toast
+  const customDelete = (id) => {
+    toast((t) => (
+      <div className="flex gap-3 items-center">
+        <div>
+          <p>
+            Are you <b>sure?</b>
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            className="bg-red-400 text-white px-3 py-1 rounded-md"
+            onClick={() => {
+              toast.dismiss(t.id);
+              handleDelete(id);
+            }}
+          >
+            Yes
+          </button>
+          <button
+            className="bg-green-400 text-white px-3 py-1 rounded-md"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
   return (
     <section className="container px-4 mx-auto pt-12">
       <div className="flex items-center gap-x-3">
@@ -134,7 +165,7 @@ const MyPostedJobs = () => {
                         <div className="flex items-center gap-x-6">
                           {/* delete button */}
                           <button
-                            onClick={() => handleDelete(job._id)}
+                            onClick={() => customDelete(job._id)}
                             className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none"
                           >
                             <svg
