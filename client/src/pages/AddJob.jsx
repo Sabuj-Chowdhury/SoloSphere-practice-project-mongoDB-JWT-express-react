@@ -4,10 +4,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const AddJob = () => {
   const [startDate, setStartDate] = useState(new Date());
   const { user } = useContext(AuthContext); //get user from the context
+  const navigate = useNavigate();
 
   // get data from the form
   const handlePostJob = (e) => {
@@ -36,13 +38,17 @@ const AddJob = () => {
     };
     // console.log(addJobData);
 
+    // API call to save data
     try {
       axios
         .post(`${import.meta.env.VITE_URL}/add-job`, addJobData)
         .then((res) => {
           if (res.data.insertedId) {
             toast.success("job posted successfully");
+
+            form.reset(); //reset the form
           }
+          navigate("/my-posted-jobs"); //navigate to my-posted-job
         });
     } catch (err) {
       toast.error(err);
