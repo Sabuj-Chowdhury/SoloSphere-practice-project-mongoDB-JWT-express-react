@@ -19,7 +19,7 @@ const JobCard = ({ job }) => {
   } = job || {};
   console.log(buyer);
 
-  // formate the date using 'date-fns' library
+  // formate the deadline using 'date-fns' library
   const formattedDeadline = format(new Date(deadline), "dd/MM/yyyy");
 
   return (
