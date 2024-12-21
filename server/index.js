@@ -58,6 +58,21 @@ async function run() {
       res.send(result);
     });
 
+    // **********************PUT**************************
+
+    // API to update job
+    app.put("/update-job/:id", async (req, res) => {
+      const id = req.params.id;
+      const jobData = req.body;
+      const updated = {
+        $set: jobData,
+      };
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const result = await jobsCollection.updateOne(query, updated, options);
+      res.send(result);
+    });
+
     // **********************DELETE************************
 
     //delete a job from the DB

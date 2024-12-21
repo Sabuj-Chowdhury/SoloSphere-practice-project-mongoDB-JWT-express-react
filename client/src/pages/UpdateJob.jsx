@@ -2,14 +2,16 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../providers/AuthProvider";
+import toast from "react-hot-toast";
 
 const UpdateJob = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [job, setJob] = useState({}); //initial job state
   const { user } = useContext(AuthContext);
   const { id } = useParams();
+  const navigate = useNavigate();
   // console.log(id);
 
   useEffect(() => {
@@ -22,6 +24,47 @@ const UpdateJob = () => {
 
   // console.log(job);
 
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const title = form.job_title.value;
+    const email = form.email.value;
+    const deadline = startDate;
+    const category = form.category.value;
+    const min_price = parseInt(form.min_price.value);
+    const max_price = parseInt(form.max_price.value);
+    const description = form.description.value;
+    const addJobData = {
+      title,
+      buyer: {
+        email,
+        name: user?.displayName,
+        photo: user?.photoURL,
+      },
+      deadline,
+      category,
+      min_price,
+      max_price,
+      description,
+      bid_count: job.bid_count,
+    };
+    // API call to save data
+    try {
+      axios
+        .put(`${import.meta.env.VITE_URL}/update-job/${id}`, addJobData)
+        .then((res) => {
+          // console.log(res.data);
+
+          if (res.data.modifiedCount) {
+            toast.success("job updated successfully!");
+          }
+          navigate("/my-posted-jobs"); //navigate to my-posted-job
+        });
+    } catch (err) {
+      toast.error(err);
+    }
+  };
+
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
       <section className=" p-2 md:p-6 mx-auto bg-white rounded-md shadow-md ">
@@ -29,7 +72,7 @@ const UpdateJob = () => {
           Update a Job
         </h2>
 
-        <form>
+        <form onSubmit={handleUpdate}>
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
             <div>
               <label className="text-gray-700 " htmlFor="job_title">
