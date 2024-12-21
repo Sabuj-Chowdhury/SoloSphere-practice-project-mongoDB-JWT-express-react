@@ -49,6 +49,15 @@ async function run() {
       res.send(result);
     });
 
+    // API to get a single job by id
+    app.get("/job/:id", async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await jobsCollection.findOne(query);
+      res.send(result);
+    });
+
     // **********************DELETE************************
 
     //delete a job from the DB
