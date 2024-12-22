@@ -37,8 +37,16 @@ async function run() {
 
     // API for saving bid data in DB
     app.post("/add-bid", async (req, res) => {
+      // 1. save bid data in bids collection
       const bidData = req.body;
       const result = await bidsCollection.insertOne(bidData);
+
+      // 2. increase bid count in jobs collection
+      const filter = { _id: new ObjectId(bidData.jobID) };
+      const update = {
+        $inc: { bid_count: 1 },
+      };
+      const updateBid = await jobsCollection.updateOne(filter, update);
       res.send(result);
     });
 

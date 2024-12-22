@@ -23,17 +23,8 @@ const JobDetails = () => {
     });
   }, [id]);
   // console.log(job);
-  const {
-    _id,
-    title,
-    buyer,
-    deadline,
-    category,
-    max_price,
-    min_price,
-
-    bid_count,
-  } = job || {};
+  const { _id, title, buyer, deadline, category, max_price, min_price } =
+    job || {};
 
   // bid form handler
   const handleBid = (e) => {
@@ -66,7 +57,7 @@ const JobDetails = () => {
       return toast.error("offer less or equal to maximum price!");
     }
 
-    const bidData = { price, email, comment, deadline, jobID };
+    const bidData = { price, email, comment, startDate, jobID };
     // console.log(bidData);
 
     // API call to store bid data
