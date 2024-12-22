@@ -23,6 +23,7 @@ async function run() {
   try {
     const db = client.db("solo-db"); // database
     const jobsCollection = db.collection("jobs"); //jobs collection
+    const bidsCollection = db.collection("bids"); //bids collection
 
     // ************************POST***********************
     // API for saving job post data in DB
@@ -31,6 +32,13 @@ async function run() {
       // console.log(jobData);
 
       const result = await jobsCollection.insertOne(jobData);
+      res.send(result);
+    });
+
+    // API for saving bid data in DB
+    app.post("/add-bid", async (req, res) => {
+      const bidData = req.body;
+      const result = await bidsCollection.insertOne(bidData);
       res.send(result);
     });
 

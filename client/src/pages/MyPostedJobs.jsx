@@ -12,7 +12,7 @@ const MyPostedJobs = () => {
   useEffect(() => {
     //api call for specific user posted job
     axios
-      .get(`${import.meta.env.VITE_URL}/all-jobs?email=${user.email}`)
+      .get(`${import.meta.env.VITE_URL}/all-jobs/${user.email}`)
       .then((res) => {
         setJobs(res.data);
       });

@@ -1,18 +1,23 @@
 import axios from "axios";
-import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { compareAsc, format } from "date-fns";
+import { useContext, useEffect, useState } from "react";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../providers/AuthProvider";
+import toast from "react-hot-toast";
 
 const JobDetails = () => {
   const [startDate, setStartDate] = useState(new Date());
 
   const [job, setJob] = useState({}); //initial state for job
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // api call for single job data by id
     axios.get(`${import.meta.env.VITE_URL}/job/${id}`).then((res) => {
       setJob(res.data);
     });
@@ -26,25 +31,60 @@ const JobDetails = () => {
     category,
     max_price,
     min_price,
-    description,
+
     bid_count,
   } = job || {};
 
-  // {
-  //   "_id": "6764fa4527b57a35ecbd5c41",
-  //   "title": "Frontend Developer",
-  //   "buyer": {
-  //     "email": "dipta.fakibaj@gmail.com",
-  //     "name": "sabuj chowdhury dipta",
-  //     "photo": "https://lh3.googleusercontent.com/a/ACg8ocJVSkJKPUlLYDfMikndvRD68ItvUsf0g42i5qoNKoBcwKS6N3rf=s96-c"
-  //   },
-  //   "deadline": "2024-12-24T05:01:25.000Z",
-  //   "category": "Web Development",
-  //   "min_price": 500,
-  //   "max_price": 1500,
-  //   "description": "Build responsive and interactive user interfaces using modern web technologies such as React, Vue.js, or Angular.",
-  //   "bid_count": 0
-  // }
+  // bid form handler
+  const handleBid = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const price = form.price.value;
+    const email = user?.email;
+    const comment = form.comment.value;
+    const jobID = _id;
+    // console.table({ price, email, comment, deadline });
+
+    // validation
+
+    // 0. permission to place bid
+    if (user.email === buyer.email) {
+      return toast.error("Forbidden, You can't place Bid on your Job Post!");
+    }
+
+    // 1.if deadline crossed validation
+    if (compareAsc(new Date(), new Date(deadline)) === 1) {
+      return toast.error("deadline crossed, Bid forbidden!");
+    }
+    // 3.if offer deadline is crossed
+    if (compareAsc(new Date(startDate), new Date(deadline)) === 1) {
+      return toast.error("place offer within deadline!");
+    }
+
+    // 3. if a bid price is greater then maximum budget
+    if (price > max_price) {
+      return toast.error("offer less or equal to maximum price!");
+    }
+
+    const bidData = { price, email, comment, deadline, jobID };
+    // console.log(bidData);
+
+    // API call to store bid data
+    axios
+      .post(`${import.meta.env.VITE_URL}/add-bid`, bidData)
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.insertedId) {
+          toast.success("Bid placed successfully!");
+          form.reset();
+        }
+        navigate("/my-bids");
+      })
+      .catch((err) => {
+        toast.error(err);
+      });
+  };
+
   return (
     <div className="flex flex-col md:flex-row justify-around gap-5  items-center min-h-[calc(100vh-306px)] md:max-w-screen-xl mx-auto ">
       {/* Job Details */}
@@ -97,7 +137,7 @@ const JobDetails = () => {
           Place A Bid
         </h2>
 
-        <form>
+        <form onSubmit={handleBid}>
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
             <div>
               <label className="text-gray-700 " htmlFor="price">
@@ -120,6 +160,7 @@ const JobDetails = () => {
                 id="emailAddress"
                 type="email"
                 name="email"
+                defaultValue={user?.email}
                 disabled
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md   focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
