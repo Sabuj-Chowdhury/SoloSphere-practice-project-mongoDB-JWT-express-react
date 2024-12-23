@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 const BidRequests = () => {
   const { user } = useContext(AuthContext);
@@ -14,6 +15,28 @@ const BidRequests = () => {
       });
   }, [user?.email]);
   // console.log(bids);
+
+  // status change function
+  const handleStatus = (id, prevStatus, status) => {
+    // console.log(id, prevStatus, status);
+    if (prevStatus !== "In Progress") {
+      return toast.error("Can not change status!");
+    }
+    axios
+      .patch(`${import.meta.env.VITE_URL}/bid-status-update/${id}`, { status })
+      .then((res) => {
+        console.log(res.data);
+        // refresh UI
+        axios
+          .get(`${import.meta.env.VITE_URL}/my-bids/${user.email}`)
+          .then((res) => {
+            setBids(res.data);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <section className="container px-4 mx-auto my-12">
@@ -116,7 +139,17 @@ const BidRequests = () => {
                       </td>
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
                         <div className="flex items-center gap-x-6">
-                          <button className="disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none">
+                          {/* accept  button */}
+                          <button
+                            onClick={() =>
+                              handleStatus(bid._id, bid.status, "In Progress")
+                            }
+                            disabled={
+                              bid.status === "In Progress" ||
+                              bid.status === "Completed"
+                            }
+                            className="disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none"
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
@@ -133,7 +166,18 @@ const BidRequests = () => {
                             </svg>
                           </button>
 
-                          <button className="disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none">
+                          {/* reject button */}
+
+                          <button
+                            onClick={() =>
+                              handleStatus(bid._id, bid.status, "Rejected")
+                            }
+                            disabled={
+                              bid.status === "Rejected" ||
+                              bid.status === "Completed"
+                            }
+                            className="disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none"
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"

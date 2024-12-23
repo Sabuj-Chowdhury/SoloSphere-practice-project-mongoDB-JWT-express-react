@@ -117,6 +117,20 @@ async function run() {
       res.send(result);
     });
 
+    // **********************PATCH************************
+
+    // update bid status
+    app.patch("/bid-status-update/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const { status } = req.body;
+      const update = {
+        $set: { status },
+      };
+      const result = await bidsCollection.updateOne(filter, update);
+      res.send(result);
+    });
+
     // **********************DELETE************************
 
     //delete a job from the DB

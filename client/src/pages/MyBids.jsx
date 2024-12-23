@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 const MyBids = () => {
   const { user } = useContext(AuthContext);
@@ -14,6 +15,28 @@ const MyBids = () => {
       });
   }, [user.email]);
   // console.log(bids);
+
+  // status change function
+  const handleStatus = (id, prevStatus, status) => {
+    // console.log(id, prevStatus, status);
+    if (prevStatus !== "In Progress") {
+      return toast.error("Can not change status!");
+    }
+    axios
+      .patch(`${import.meta.env.VITE_URL}/bid-status-update/${id}`, { status })
+      .then((res) => {
+        console.log(res.data);
+        // refresh UI
+        axios
+          .get(`${import.meta.env.VITE_URL}/my-bids/${user.email}`)
+          .then((res) => {
+            setBids(res.data);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <section className="container px-4 mx-auto my-12">
@@ -110,9 +133,14 @@ const MyBids = () => {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
+                        {/* mark as completed button */}
                         <button
+                          onClick={() =>
+                            handleStatus(bid._id, bid.status, "Completed")
+                          }
+                          disabled={bid.status !== "In Progress"}
                           title="Mark Complete"
-                          className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none disabled:cursor-not-allowed"
+                          className="hover:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none disabled:cursor-not-allowed"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
