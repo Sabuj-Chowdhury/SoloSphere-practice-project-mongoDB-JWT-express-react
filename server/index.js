@@ -94,6 +94,14 @@ async function run() {
       res.send(result);
     });
 
+    // get all bid request for specific logged in user
+    app.get("/bid-request/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { buyer: email };
+      const result = await bidsCollection.find(filter).toArray();
+      res.send(result);
+    });
+
     // **********************PUT**************************
 
     // API to update job

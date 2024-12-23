@@ -66,6 +66,7 @@ const JobDetails = () => {
       title,
       category,
       status: "pending",
+      buyer: buyer?.email,
     };
     // console.log(bidData);
 
