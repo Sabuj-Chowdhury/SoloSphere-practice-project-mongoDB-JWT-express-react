@@ -57,7 +57,16 @@ const JobDetails = () => {
       return toast.error("offer less or equal to maximum price!");
     }
 
-    const bidData = { price, email, comment, startDate, jobId };
+    const bidData = {
+      price,
+      email,
+      comment,
+      deadline: startDate,
+      jobId,
+      title,
+      category,
+      status: "pending",
+    };
     // console.log(bidData);
 
     // API call to store bid data
