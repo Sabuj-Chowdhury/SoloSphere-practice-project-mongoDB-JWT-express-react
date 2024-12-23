@@ -65,7 +65,12 @@ async function run() {
     // ************************GET***********************
     // API to get all the jobs
     app.get("/all-jobs", async (req, res) => {
-      const result = await jobsCollection.find().toArray();
+      const filter = req.query.filter;
+      let query = {};
+      if (filter) {
+        query.category = filter;
+      }
+      const result = await jobsCollection.find(query).toArray();
       res.send(result);
     });
 
