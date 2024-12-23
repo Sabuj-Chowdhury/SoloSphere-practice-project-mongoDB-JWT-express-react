@@ -7,7 +7,16 @@ require("dotenv").config();
 const port = process.env.PORT || 9000;
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://solosphere-6ee32.web.app",
+      "https://solosphere-6ee32.firebaseapp.com",
+    ],
+    credentials: true, //allows to access from other domains
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.i53p4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
