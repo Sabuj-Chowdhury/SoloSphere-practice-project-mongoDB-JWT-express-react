@@ -27,19 +27,19 @@ const JobDetails = () => {
     job || {};
 
   // bid form handler
-  const handleBid = (e) => {
+  const handleBid = async (e) => {
     e.preventDefault();
     const form = e.target;
     const price = form.price.value;
     const email = user?.email;
     const comment = form.comment.value;
-    const jobID = _id;
+    const jobId = _id;
     // console.table({ price, email, comment, deadline });
 
     // validation
 
     // 0. permission to place bid
-    if (user.email === buyer.email) {
+    if (user?.email === buyer?.email) {
       return toast.error("Forbidden, You can't place Bid on your Job Post!");
     }
 
@@ -57,23 +57,26 @@ const JobDetails = () => {
       return toast.error("offer less or equal to maximum price!");
     }
 
-    const bidData = { price, email, comment, startDate, jobID };
+    const bidData = { price, email, comment, startDate, jobId };
     // console.log(bidData);
 
     // API call to store bid data
-    axios
-      .post(`${import.meta.env.VITE_URL}/add-bid`, bidData)
-      .then((res) => {
-        console.log(res.data);
-        if (res.data.insertedId) {
-          toast.success("Bid placed successfully!");
-          form.reset();
-        }
-        navigate("/my-bids");
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_URL}/add-bid`,
+        bidData
+      );
+      // console.log(data);
+
+      form.reset();
+      toast.success("Bid Successful!!!");
+      navigate("/my-bids");
+    } catch (err) {
+      // Extract and handle error message
+      const errorMessage =
+        err.response?.data || err.message || "An unknown error occurred";
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -112,7 +115,8 @@ const JobDetails = () => {
                   </p>
                 </div>
                 <div className="rounded-full object-cover overflow-hidden w-14 h-14">
-                  <img src={buyer.photo} alt="" />
+                  {/* for not seeing the pic */}
+                  <img referrerPolicy="no-referrer" src={buyer.photo} alt="" />
                 </div>
               </div>
             )}
