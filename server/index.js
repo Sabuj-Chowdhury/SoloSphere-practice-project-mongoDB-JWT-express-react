@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+// const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
@@ -24,6 +25,17 @@ async function run() {
     const db = client.db("solo-db"); // database
     const jobsCollection = db.collection("jobs"); //jobs collection
     const bidsCollection = db.collection("bids"); //bids collection
+
+    // *************************JWT generate****************
+    // app.post("/jwt", async (req, res) => {
+    //   const email = req.body;
+    //   const token = jwt.sign(email, process.env.SECRET_KEY, {
+    //     expiresIn: "10h",
+    //   });
+    //   console.log(token);
+
+    //   res.send(token);
+    // });
 
     // ************************POST***********************
     // API for saving job post data in DB
